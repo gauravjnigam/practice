@@ -1,11 +1,12 @@
 package com.gn.design.lru;
 
-/**
- * 
- * @author gnigam
- *
- * @param <T>
- */
-public interface LRU<T> {
+import java.util.Optional;
+
+
+public interface LRU<K, V> {
+	
+	public void put(K key, V value);
+	
+	public Optional<V> get(K key);
 
 }
