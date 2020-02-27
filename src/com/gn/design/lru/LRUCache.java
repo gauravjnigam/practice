@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 
 /**
  * 
@@ -24,6 +23,7 @@ public class LRUCache<K, V> implements LRU<K, V> {
 		this.capacity = n;
 		dataMap = new HashMap<>();
 		dataList = new LinkedList<>();
+		size = 0;
 	}
 
 	/**
@@ -33,14 +33,22 @@ public class LRUCache<K, V> implements LRU<K, V> {
 	public void put(K key, V value) {
 		Objects.requireNonNull(key, "Key is null");
 		Objects.requireNonNull(value, "Value is null");
-		
-		if(size < capacity) {
-			dataMap.put(key, value);
-			dataList.push(key);
-			size++;
-			
-		} else {
-			
+
+		if (!dataMap.containsKey(key)) {
+			// if data can be accommodated 
+			if (size < capacity) {
+				// insert into map and add into dqueue front
+				dataMap.put(key, value);
+				dataList.addFirst(key);
+				size++;
+
+			} else {
+				K keyToDelete = dataList.removeLast();
+				dataMap.remove(keyToDelete);
+				dataList.addFirst(key);
+				dataMap.put(key,value);
+				
+			}
 		}
 	}
 
@@ -48,7 +56,12 @@ public class LRUCache<K, V> implements LRU<K, V> {
 	 * 
 	 */
 	@Override
-	public Optional<V> get(K key) {
+	public V get(K key) {
+		if(dataMap.containsKey(key)) {
+			dataList.remove(key);
+			dataList.addFirst(key);
+			return dataMap.get(key);
+		}
 		return null;
 	}
 
